@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0e14">
+<meta name="mobile-web-app-capable" content="yes">
+<title>BIO-ASSAY // MACRO TELEMETRY</title>
+<style>
+  :root {
+    --bg: #0a0e14;
+    --panel: #121924;
+    --border: #2a384c;
+    --text: #f0f6fc;
+    --muted: #8b9eb7;
+    --green: #00e676;
+    --lime: #aeea00;
+    --amber: #ffab00;
+    --red: #ff1744;
+    --cyan: #00e5ff;
+    --purple: #d500f9;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    padding: 12px;
+    max-width: 500px;
+    margin: 0 auto;
+    padding-bottom: 80px;
+  }
+
+  /* CLINICAL HEADER */
+  .header {
+    border: 3px solid var(--cyan);
+    background: var(--panel);
+    padding: 12px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.15);
+  }
+  .header-title {
+    font-size: 1.1rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--cyan);
+  }
+  .header-sub {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .status-badge {
+    background: var(--green);
+    color: #000;
+    font-weight: 900;
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  /* MFP STYLE CALORIE EQUATION */
+  .telemetry-card {
+    background: var(--panel);
+    border: 3px solid var(--border);
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: var(--muted);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .mfp-equation {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1.2fr;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+    margin-bottom: 14px;
+  }
+  .eq-val {
+    font-size: 1.45rem;
+    font-weight: 900;
+  }
+  .eq-rem {
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: var(--green);
+  }
+  .eq-op {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--cyan);
+  }
+  .eq-lbl {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* MACRO GAUGES */
+  .macro-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .macro-box {
+    background: #0d131c;
+    border: 2px solid var(--border);
+    padding: 8px;
+    text-align: center;
+  }
+  .macro-name {
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .macro-nums {
+    font-size: 1rem;
+    font-weight: 900;
+    margin-bottom: 6px;
+  }
+  .bar-bg {
+    width: 100%;
+    height: 10px;
+    background: #1e293b;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  /* YUKA DAILY CLINICAL SCORE */
+  .yuka-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #0d131c;
+    border: 3px solid var(--border);
+    padding: 12px;
+    margin-bottom: 14px;
+  }
+  .yuka-circle {
+    min-width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    border: 6px solid var(--green);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-weight: 900;
+    font-size: 1.4rem;
+    background: #070a0e;
+  }
+  .yuka-circle span {
+    font-size: 0.55rem;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .yuka-verdict-title {
+    font-weight: 900;
+    font-size: 1rem;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .yuka-verdict-desc {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+
+  /* ULTRA-BOLD OPERATIONS */
+  .ops-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .btn-bold {
+    background: var(--cyan);
+    color: #000;
+    border: 3px solid #fff;
+    padding: 14px 10px;
+    font-size: 0.95rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #008fa1;
+    transition: transform 0.08s, box-shadow 0.08s;
+    text-align: center;
+  }
+  .btn-bold:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #008fa1;
+  }
+  .btn-green {
+    background: var(--green);
+    box-shadow: 0 4px 0 #00994d;
+  }
+  .btn-amber {
+    background: var(--amber);
+    box-shadow: 0 4px 0 #b27800;
+  }
+  .btn-red {
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 4px 0 #990022;
+  }
+  .btn-full {
+    grid-column: span 2;
+  }
+
+  /* QUICK SPECIMEN INJECTOR */
+  .preset-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+  }
+  .preset-chip {
+    flex: 0 0 auto;
+    background: var(--panel);
+    border: 2px solid var(--cyan);
+    color: var(--text);
+    padding: 10px 12px;
+    font-weight: 900;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+  .preset-chip:active {
+    background: var(--cyan);
+    color: #000;
+  }
+  .preset-chip .chip-sub {
+    display: block;
+    font-size: 0.65rem;
+    color: var(--muted);
+    font-weight: 700;
+    margin-top: 2px;
+  }
+
+  /* INPUT FORM */
+  .form-panel {
+    display: none;
+    background: var(--panel);
+    border: 3px solid var(--green);
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .form-panel.active {
+    display: block;
+  }
+  .input-group {
+    margin-bottom: 10px;
+  }
+  .input-group label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 4px;
+  }
+  .input-group input {
+    width: 100%;
+    padding: 12px;
+    background: #070a0e;
+    border: 2px solid var(--border);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 900;
+  }
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 6px;
+  }
+
+  /* SPECIMEN LOG LIST */
+  .log-item {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    padding: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .log-left {
+    flex: 1;
+  }
+  .log-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .yuka-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .log-name {
+    font-weight: 900;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+  }
+  .log-macros {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--cyan);
+    margin-bottom: 4px;
+  }
+  .log-wit {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .log-right {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+  .yuka-badge {
+    font-size: 0.75rem;
+    font-weight: 900;
+    padding: 3px 7px;
+    color: #000;
+    text-transform: uppercase;
+  }
+  .btn-del {
+    background: transparent;
+    border: 2px solid var(--red);
+    color: var(--red);
+    font-weight: 900;
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+  <!-- CLINICAL HEADER -->
+  <div class="header">
+    <div>
+      <div class="header-title">BIO-ASSAY // TELEMETRY v3.6</div>
+      <div class="header-sub">SUBJECT: ELDER MILLENNIAL METABOLISM</div>
+    </div>
+    <div class="status-badge" id="sys-status">ONLINE</div>
+  </div>
+
+  <!-- MFP CALORIE EQUATION -->
+  <div class="telemetry-card">
+    <div class="section-label">
+      <span>CALORIC FLUX CAPACITANCE</span>
+      <span id="hydration-status">RO H2O: OPTIMAL</span>
+    </div>
+    <div class="mfp-equation">
+      <div>
+        <div class="eq-val" id="cal-goal">2200</div>
+        <div class="eq-lbl">QUOTA</div>
+      </div>
+      <div class="eq-op">−</div>
+      <div>
+        <div class="eq-val" id="cal-eaten">0</div>
+        <div class="eq-lbl">INGESTED</div>
+      </div>
+      <div class="eq-op">=</div>
+      <div>
+        <div class="eq-rem" id="cal-rem">2200</div>
+        <div class="eq-lbl">AVAILABLE</div>
+      </div>
+    </div>
+
+    <!-- MACRO BARS -->
+    <div class="macro-grid">
+      <div class="macro-box">
+        <div class="macro-name" style="color:var(--green)">PROTEIN (SARCOPENIA SHIELD)</div>
+        <div class="macro-nums"><span id="p-cur">0</span> / <span id="p-goal">175</span>g</div>
+        <div class="bar-bg"><div class="bar-fill" id="p-bar" style="background:var(--green)"></div></div>
+      </div>
+      <div class="macro-box">
+        <div class="macro-name" style="color:var(--cyan)">CARBS (SEROTONIN)</div>
+        <div class="macro-nums"><span id="c-cur">0</span> / <span id="c-goal">200</span>g</div>
+        <div class="bar-bg"><div class="bar-fill" id="c-bar" style="background:var(--cyan)"></div></div>
+      </div>
+      <div class="macro-box">
+        <div class="macro-name" style="color:var(--amber)">LIPIDS (JOINT LUBE)</div>
+        <div class="macro-nums"><span id="f-cur">0</span> / <span id="f-goal">70</span>g</div>
+        <div class="bar-bg"><div class="bar-fill" id="f-bar" style="background:var(--amber)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- YUKA OVERALL SCORE -->
+  <div class="yuka-banner">
+    <div class="yuka-circle" id="yuka-total-circle">
+      <div id="yuka-avg">--</div>
+      <span>/ 100</span>
+    </div>
+    <div>
+      <div class="yuka-verdict-title" id="yuka-title">AWAITING BIO-SPECIMENS</div>
+      <div class="yuka-verdict-desc" id="yuka-desc">Stomach currently running on vibes and residual 90s nostalgia. Inject fuel below.</div>
+    </div>
+  </div>
+
+  <!-- BOLD ACTION CONTROLS -->
+  <div class="ops-grid">
+    <button class="btn-bold btn-green" onclick="togglePanel('inject-panel')">+ INJECT CUSTOM SPECIMEN</button>
+    <button class="btn-bold btn-amber" onclick="togglePanel('calib-panel')">⚙ CALIBRATE TARGETS</button>
+  </div>
+
+  <!-- QUICK PRESET INJECTORS -->
+  <div class="section-label"><span>RAPID SPECIMEN INJECTION (1-TAP)</span></div>
+  <div class="preset-scroll" id="preset-container"></div>
+
+  <!-- CUSTOM SPECIMEN FORM -->
+  <div class="form-panel" id="inject-panel">
+    <div class="section-label" style="color:var(--green)"><span>MANUAL SPECIMEN ASSAY</span></div>
+    <div class="input-group">
+      <label>SPECIMEN DESIGNATION (FOOD NAME)</label>
+      <input type="text" id="in-name" placeholder="e.g., Garlic Herb Salmon">
+    </div>
+    <div class="input-row">
+      <div class="input-group">
+        <label>KCAL</label>
+        <input type="number" id="in-cal" placeholder="400">
+      </div>
+      <div class="input-group">
+        <label>PROT (g)</label>
+        <input type="number" id="in-p" placeholder="40">
+      </div>
+      <div class="input-group">
+        <label>CARB (g)</label>
+        <input type="number" id="in-c" placeholder="10">
+      </div>
+      <div class="input-group">
+        <label>FAT (g)</label>
+        <input type="number" id="in-f" placeholder="18">
+      </div>
+    </div>
+    <button class="btn-bold btn-green" style="width:100%" onclick="addCustomFood()">EXECUTE INJECTION</button>
+  </div>
+
+  <!-- CALIBRATION FORM -->
+  <div class="form-panel" id="calib-panel" style="border-color:var(--amber)">
+    <div class="section-label" style="color:var(--amber)"><span>CALIBRATE METABOLIC PARAMETERS</span></div>
+    <div class="input-row">
+      <div class="input-group">
+        <label>KCAL</label>
+        <input type="number" id="set-cal" value="2200">
+      </div>
+      <div class="input-group">
+        <label>PROT (g)</label>
+        <input type="number" id="set-p" value="175">
+      </div>
+      <div class="input-group">
+        <label>CARB (g)</label>
+        <input type="number" id="set-c" value="200">
+      </div>
+      <div class="input-group">
+        <label>FAT (g)</label>
+        <input type="number" id="set-f" value="70">
+      </div>
+    </div>
+    <button class="btn-bold btn-amber" style="width:100%" onclick="saveCalibration()">LOCK CALIBRATION</button>
+  </div>
+
+  <!-- INGESTION LEDGER -->
+  <div class="section-label">
+    <span>DAILY INGESTION TELEMETRY LOG</span>
+    <span id="item-count">0 SPECIMENS</span>
+  </div>
+  <div id="log-container"></div>
+
+  <!-- PURGE BUTTON -->
+  <div class="ops-grid" style="margin-top:20px;">
+    <button class="btn-bold btn-red btn-full" onclick="purgeDay()">⚠ PURGE DAILY TELEMETRY (NEW CYCLE)</button>
+  </div>
+
+<script>
+  // PRESET SPECIMEN DATABASE
+  const presets = [
+    { name: "Air-Fried Garlic Salmon (6oz)", cal: 350, p: 38, c: 2, f: 21, score: 98, wit: "EXCELLENT: Peak Omega-3 conductivity. Lower back pain reduced by 4%." },
+    { name: "Grilled Onion & Garlic Chicken", cal: 280, p: 46, c: 4, f: 8, score: 96, wit: "EXCELLENT: Pure lean myofibrillar repair. Zero notes." },
+    { name: "Post-Gym Whey Isolate Shake", cal: 130, p: 28, c: 2, f: 1, score: 92, wit: "EXCELLENT: Anabolic window secured before knee joints start clicking." },
+    { name: "Shrimp & Garlic Stir-Fry", cal: 320, p: 34, c: 28, f: 7, score: 90, wit: "EXCELLENT: High bio-availability. Breath weaponized at +50 potency." },
+    { name: "Iced Coffee on Empty Stomach", cal: 45, p: 1, c: 8, f: 1, score: 52, wit: "MEDIOCRE: Cortisol spike detected. Tachycardia vibes nominal." },
+    { name: "90s Kid Nostalgia Pizza Slice", cal: 310, p: 12, c: 36, f: 13, score: 38, wit: "POOR: Tastes like a Friday night at Blockbuster. Require 1x antacid." },
+    { name: "Contaminated Item (Mushrooms/Olives/Quinoa)", cal: 150, p: 4, c: 25, f: 4, score: 0, wit: "BIOHAZARD: Unacceptable culinary contraband detected. Purge immediately." }
+  ];
+
+  // STATE MANAGEMENT
+  let state = JSON.parse(localStorage.getItem('biomedMacroState')) || {
+    goals: { cal: 2200, p: 175, c: 200, f: 70 },
+    log: []
+  };
+
+  function saveState() {
+    localStorage.setItem('biomedMacroState', JSON.stringify(state));
+    render();
+  }
+
+  function togglePanel(id) {
+    const el = document.getElementById(id);
+    const isActive = el.classList.contains('active');
+    document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+    if (!isActive) el.classList.add('active');
+  }
+
+  // YUKA SCORING ALGORITHM FOR CUSTOM INPUTS
+  function evaluateSpecimen(name, cal, p, c, f) {
+    const lower = name.toLowerCase();
+    if (lower.includes('mushroom') || lower.includes('olive') || lower.includes('quinoa')) {
+      return { score: 0, wit: "BIOHAZARD ALARM: Forbidden specimen detected. Eject from tray immediately." };
+    }
+
+    // Calculate protein efficiency & lipid density
+    const pRatio = cal > 0 ? ((p * 4) / cal) * 100 : 0;
+    let score = Math.min(100, Math.round(45 + (pRatio * 1.1) - (f > 25 ? 15 : 0)));
+
+    if (lower.includes('salmon') || lower.includes('fish') || lower.includes('shrimp') || lower.includes('chicken') || lower.includes('garlic')) {
+      score = Math.min(100, score + 15);
+    }
+    if (lower.includes('beer') || lower.includes('soda') || lower.includes('cake') || lower.includes('fries')) {
+      score = Math.max(12, score - 30);
+    }
+
+    let wit = "";
+    if (score >= 85) wit = "EXCELLENT: Clinical-grade cellular fuel. Your 30-something metabolism salutes you.";
+    else if (score >= 65) wit = "GOOD: Solid biometric choice. Will not trigger a 2 PM desk coma.";
+    else if (score >= 40) wit = "MEDIOCRE: Emotional support calories. Monitor for mild acid reflux.";
+    else wit = "POOR: Delicious dopamine hit, questionable structural integrity.";
+
+    return { score, wit };
+  }
+
+  function getYukaColor(score) {
+    if (score >= 75) return "var(--green)";
+    if (score >= 50) return "var(--lime)";
+    if (score >= 25) return "var(--amber)";
+    return "var(--red)";
+  }
+
+  function addPreset(index) {
+    const item = presets[index];
+    state.log.unshift({ ...item, id: Date.now() });
+    saveState();
+  }
+
+  function addCustomFood() {
+    const name = document.getElementById('in-name').value.trim() || "Mystery Bio-Matter";
+    const cal = parseInt(document.getElementById('in-cal').value) || 0;
+    const p = parseInt(document.getElementById('in-p').value) || 0;
+    const c = parseInt(document.getElementById('in-c').value) || 0;
+    const f = parseInt(document.getElementById('in-f').value) || 0;
+
+    const evalData = evaluateSpecimen(name, cal, p, c, f);
+    state.log.unshift({
+      id: Date.now(),
+      name, cal, p, c, f,
+      score: evalData.score,
+      wit: evalData.wit
+    });
+
+    document.getElementById('in-name').value = '';
+    document.getElementById('in-cal').value = '';
+    document.getElementById('in-p').value = '';
+    document.getElementById('in-c').value = '';
+    document.getElementById('in-f').value = '';
+    togglePanel('inject-panel');
+    saveState();
+  }
+
+  function removeFood(id) {
+    state.log = state.log.filter(item => item.id !== id);
+    saveState();
+  }
+
+  function saveCalibration() {
+    state.goals.cal = parseInt(document.getElementById('set-cal').value) || 2200;
+    state.goals.p = parseInt(document.getElementById('set-p').value) || 175;
+    state.goals.c = parseInt(document.getElementById('set-c').value) || 200;
+    state.goals.f = parseInt(document.getElementById('set-f').value) || 70;
+    togglePanel('calib-panel');
+    saveState();
+  }
+
+  function purgeDay() {
+    if (confirm("CONFIRM PURGE: Wipe all ingested telemetry for a fresh 24-hour cycle?")) {
+      state.log = [];
+      saveState();
+    }
+  }
+
+  function render() {
+    // Render Presets
+    const presetHTML = presets.map((item, idx) => `
+      <button class="preset-chip" onclick="addPreset(${idx})">
+        + ${item.name}
+        <span class="chip-sub">${item.cal} KCAL | ${item.p}g P | YUKA: ${item.score}/100</span>
+      </button>
+    `).join('');
+    document.getElementById('preset-container').innerHTML = presetHTML;
+
+    // Totals
+    const totals = state.log.reduce((acc, item) => {
+      acc.cal += item.cal;
+      acc.p += item.p;
+      acc.c += item.c;
+      acc.f += item.f;
+      acc.scoreSum += item.score;
+      return acc;
+    }, { cal: 0, p: 0, c: 0, f: 0, scoreSum: 0 });
+
+    const rem = state.goals.cal - totals.cal;
+    document.getElementById('cal-goal').innerText = state.goals.cal;
+    document.getElementById('cal-eaten').innerText = totals.cal;
+    const remEl = document.getElementById('cal-rem');
+    remEl.innerText = rem;
+    remEl.style.color = rem >= 0 ? 'var(--green)' : 'var(--red)';
+
+    // Macros
+    document.getElementById('p-cur').innerText = totals.p;
+    document.getElementById('p-goal').innerText = state.goals.p;
+    document.getElementById('p-bar').style.width = Math.min(100, (totals.p / state.goals.p) * 100) + '%';
+
+    document.getElementById('c-cur').innerText = totals.c;
+    document.getElementById('c-goal').innerText = state.goals.c;
+    document.getElementById('c-bar').style.width = Math.min(100, (totals.c / state.goals.c) * 100) + '%';
+
+    document.getElementById('f-cur').innerText = totals.f;
+    document.getElementById('f-goal').innerText = state.goals.f;
+    document.getElementById('f-bar').style.width = Math.min(100, (totals.f / state.goals.f) * 100) + '%';
+
+    // Yuka Daily Average
+    const count = state.log.length;
+    document.getElementById('item-count').innerText = `${count} SPECIMEN${count === 1 ? '' : 'S'}`;
+    const circle = document.getElementById('yuka-total-circle');
+    const yukaAvgEl = document.getElementById('yuka-avg');
+    const yukaTitle = document.getElementById('yuka-title');
+    const yukaDesc = document.getElementById('yuka-desc');
+
+    if (count === 0) {
+      yukaAvgEl.innerText = "--";
+      circle.style.borderColor = "var(--border)";
+      yukaTitle.innerText = "AWAITING BIO-SPECIMENS";
+      yukaDesc.innerText = "Stomach currently running on vibes and residual 90s nostalgia. Inject fuel below.";
+    } else {
+      const avg = Math.round(totals.scoreSum / count);
+      const col = getYukaColor(avg);
+      yukaAvgEl.innerText = avg;
+      circle.style.borderColor = col;
+
+      if (avg >= 80) {
+        yukaTitle.innerText = "GRADE A: PEAK BIOMEDICAL CALIBRATION";
+        yukaTitle.style.color = "var(--green)";
+        yukaDesc.innerText = "Bloodwork immaculate. You have earned the right to feel superior to people who eat quinoa.";
+      } else if (avg >= 60) {
+        yukaTitle.innerText = "GRADE B: WITHIN ACCEPTABLE TOLERANCE";
+        yukaTitle.style.color = "var(--lime)";
+        yukaDesc.innerText = "Homeostasis maintained. No service alarms triggered.";
+      } else if (avg >= 35) {
+        yukaTitle.innerText = "GRADE C: CHECK ENGINE LIGHT FLICKERING";
+        yukaTitle.style.color = "var(--amber)";
+        yukaDesc.innerText = "Sub-optimal conductivity. Flush system with 16oz water and lean protein immediately.";
+      } else {
+        yukaTitle.innerText = "GRADE F: CRITICAL METABOLIC ALARM";
+        yukaTitle.style.color = "var(--red)";
+        yukaDesc.innerText = "Someone either ate trash or accidentally ingested a mushroom. Initiate emergency protocol.";
+      }
+    }
+
+    // Log Items
+    const logHTML = state.log.map(item => {
+      const col = getYukaColor(item.score);
+      return `
+        <div class="log-item">
+          <div class="log-left">
+            <div class="log-title-row">
+              <span class="yuka-dot" style="background:${col}"></span>
+              <span class="log-name">${item.name}</span>
+            </div>
+            <div class="log-macros">${item.cal} KCAL  //  P: ${item.p}g  |  C: ${item.c}g  |  F: ${item.f}g</div>
+            <div class="log-wit">${item.wit}</div>
+          </div>
+          <div class="log-right">
+            <span class="yuka-badge" style="background:${col}">YUKA: ${item.score}/100</span>
+            <button class="btn-del" onclick="removeFood(${item.id})">EJECT</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+    document.getElementById('log-container').innerHTML = logHTML;
+  }
+
+  // Initialize inputs & UI
+  document.getElementById('set-cal').value = state.goals.cal;
+  document.getElementById('set-p').value = state.goals.p;
+  document.getElementById('set-c').value = state.goals.c;
+  document.getElementById('set-f').value = state.goals.f;
+  render();
+</script>
+</body>
+</html>
